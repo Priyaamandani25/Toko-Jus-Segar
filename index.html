@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Toko Jus Segar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: #f3e5f5; /* Tone ungu muda seperti di keranjang */
+            color: #333;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: #ab47bc; /* Tone ungu lebih gelap */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive; /* Font cantik dan miring */
+            color: white; /* Warna putih untuk judul */
+            margin-bottom: 30px;
+            font-size: 3.5em; /* Ukuran font lebih besar untuk judul */
+            text-align: center;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ede7f6; /* Tone ungu muda lebih terang untuk main */
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        #search-input {
+            padding: 12px 15px;
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            width: 80%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        #product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .product {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .product img.product-image {
+            width: 100%;
+            height: 140px;
+            object-fit: contain; /* Mengubah object-fit menjadi contain */
+            background-color: #f8f8f8; /* Menambahkan warna latar belakang jika ada ruang kosong */
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product h3 {
+            color: #7b1fa2; /* Tone ungu lebih gelap untuk nama produk */
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .product p {
+            color: #5e35b1; /* Tone ungu lebih gelap untuk harga */
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #9c27b0; /* Tone ungu */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #7b1fa2;
+        }
+
+        /* Tombol Keranjang */
+        #cart-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ba68c8; /* Tone ungu lebih muda */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 1.1em;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
+        }
+
+        /* Panel Keranjang */
+        #cart-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 100%;
+            background-color: #f3e5f5; /* Tone ungu muda seperti body */
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 999;
+        }
+
+        #cart-panel.open {
+            transform: translateX(0);
+        }
+
+        #close-cart {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #d32f2f;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #cart-items li {
+            background-color: #e1bee7; /* Tone ungu lebih muda */
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cancel-btn {
+            background-color: #e57373;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        select, #pay-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        #pay-btn {
+            background-color: #9c27b0;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #pay-btn:hover {
+            background-color: #7b1fa2;
+        }
+
+        #cart-total {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: right;
+            color: #5e35b1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Toko Jus Segar 🍹</h1>
+    </header>
+    <main>
+        <input type="text" id="search-input" placeholder="Cari jus..." oninput="filterProducts()">
+
+        <div id="product-list"></div>
+
+        <button id="cart-toggle" onclick="toggleCart()">🛒 Lihat Keranjang
+            <span id="cart-count">0</span>
+        </button>
+
+        <div id="cart-panel">
+            <button id="close-cart" onclick="toggleCart()">❌</button>
+            <h2>Keranjang</h2>
+            <ul id="cart-items"></ul>
+            <p id="cart-total">Total: Rp0</p>
+
+            <label for="payment-method">Metode Pembayaran:</label>
+            <select id="payment-method">
+                <option value="transfer">Transfer Bank</option>
+                <option value="gopay">GoPay</option>
+                <option value="ovo">OVO</option>
+                <option value="dana">DANA</option>
+                <option value="cod">COD (Bayar di Tempat)</option>
+                <option value="paypal">PayPal</option>
+            </select>
+
+            <button id="pay-btn" onclick="payNow()">Bayar Sekarang</button>
+        </div>
+    </main>
+
+    <script>
+        const products = [
+            { name: "Jus Mangga", price: 15000, image: "img/jus-mangga.jpg" },
+            { name: "Jus Alpukat", price: 18000, image: "img/jus-alpukat.jpg" },
+            { name: "Jus Jeruk", price: 12000, image: "img/jus-jeruk.jpg" },
+            { name: "Jus Semangka", price: 13000, image: "img/jus-semangka.jpg" },
+            { name: "Jus Stroberi", price: 16000, image: "img/jus-stroberi.jpg" },
+            { name: "Jus Melon", price: 14000, image: "img/jus-melon.jpg" },
+            { name: "Jus Nanas", price: 15000, image: "img/jus-nanas.jpg" }
+        ];
+
+        const productList = document.getElementById("product-list");
+        const cartPanel = document.getElementById("cart-panel");
+        const cartToggleBtn = document.getElementById("cart-toggle");
+        const cartCount = document.getElementById("cart-count");
+        const cartItems = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+        const searchInput = document.getElementById("search-input");
+        let cart = [];
+
+        function renderProducts(filtered = products) {
+            productList.innerHTML = "";
+            filtered.forEach(product => {
+                const div = document.createElement("div");
+                div.className = "product";
+                div.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <h3>${product.name}</h3>
+                    <p>Rp ${product.price.toLocaleString()}</p>
+                    <button onclick='addToCart(${JSON.stringify(product)})'>Tambah ke Keranjang</button>
+                `;
+                productList.appendChild(div);
+            });
+        }
+
+        function filterProducts() {
+            const keyword = searchInput.value.toLowerCase();
+            const filtered = products.filter(product => product.name.toLowerCase().includes(keyword));
+            renderProducts(filtered);
+        }
+
+        function toggleCart() {
+            cartPanel.classList.toggle("open");
+            cartToggleBtn.style.display = cartPanel.classList.contains("open") ? "none" : "inline-block";
+        }
+
+        function addToCart(product) {
+            cart.push(product);
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            cartItems.innerHTML = "";
+            let total = 0;
+            cart.forEach((item, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${item.name} - Rp${item.price.toLocaleString()}<br>
+                    <button class="cancel-btn" onclick="removeFromCart(${index})">Batal</button>
+                `;
+                cartItems.appendChild(li);
+                total += item.price;
+            });
+            cartCount.textContent = cart.length;
+            cartTotal.textContent = `Total: Rp${total.toLocaleString()}`;
+        }
+
+        function payNow() {
+            if (cart.length === 0) {
+                alert("Keranjang masih kosong!");
+                return;
+            }
+            const method = document.getElementById("payment-method").value;
+            alert("Pembayaran berhasil dengan metode: " + method.toUpperCase());
+            cart = [];
+            renderCart();
+            toggleCart();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
